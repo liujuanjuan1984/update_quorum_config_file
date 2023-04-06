@@ -15,23 +15,13 @@ logger = logging.getLogger(__name__)
 
 
 def update_config(config: dict):
-    """config:旧版本的 config 数据更新为新版本的"""
+    """旧版本的 config 更新，弃用了旧版的 jwt token"""
     new = config.copy()
     new["jwt"] = {
         "Key": config["jwtkey"],
         "Chain": {"Normal": [], "Revoke": []},
         "Node": {},
     }
-    for k, v in new["jwttokenmap"].items():
-        if k.startswith("allow-"):
-            group_id = k.strip("allow-")
-            new["jwt"]["Node"][group_id] = {
-                "Normal": [{"Remark": k, "Token": v}],
-                "Revoke": [],
-            }
-        else:
-            new["jwt"]["Chain"]["Normal"] = {"Remark": k, "Token": v}
-
     if "jwtkey" in new:
         del new["jwtkey"]
     if "jwttokenmap" in new:
